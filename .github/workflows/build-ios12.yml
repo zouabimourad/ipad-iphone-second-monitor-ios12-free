@@ -1,0 +1,47 @@
+name: Build iOS 12 IPA
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-14
+    timeout-minutes: 20
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_15.4.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build unsigned iPad app
+        run: |
+          set -euo pipefail
+          xcodebuild -version
+          xcodebuild \
+            -project iOS/LegacyPadDisplay.xcodeproj \
+            -scheme LegacyPadDisplay \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            IPHONEOS_DEPLOYMENT_TARGET=12.0 \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
+      - name: Package IPA for local signing
+        run: |
+          set -euo pipefail
+          app=build/Build/Products/Release-iphoneos/LegacyPadDisplay.app
+          test -d "$app"
+          test "$(/usr/libexec/PlistBuddy -c 'Print :MinimumOSVersion' "$app/Info.plist")" = '12.0'
+          mkdir -p package/Payload
+          cp -R "$app" package/Payload/
+          cd package
+          /usr/bin/zip -qry ../LegacyPadDisplay-ios12-unsigned.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LegacyPadDisplay-ios12-unsigned
+          path: LegacyPadDisplay-ios12-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 7
