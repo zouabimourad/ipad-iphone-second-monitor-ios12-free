@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -98,8 +98,7 @@
 				en,
 			);
 			mainGroup = 4D68C38F9C87BD694B9D014C;
-			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
+			compatibilityVersion = "Xcode 15.0";
 			productRefGroup = D57B6FCEAA03D50A2FDD4AE8 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
